@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MoneyMap Enhanced</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #006400;
+      color: white;
+      padding: 15px;
+      text-align: center;
+    }
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    nav button {
+      margin: 5px;
+      padding: 10px;
+      background-color: #d4af37;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    nav button:hover {
+      background-color: #b8912d;
+    }
+    input, button, select {
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+    }
+    .hidden { display: none; }
+    .entry { padding: 10px; border-bottom: 1px solid #ccc; }
+    .negative { color: red; }
+    .positive { color: #006400; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>MoneyMap Enhanced</h1>
+    <p id="accountDetails"></p>
+  </header>
+
+  <div class="container">
+    <div id="auth">
+      <input type="text" id="username" placeholder="Username" />
+      <input type="password" id="password" placeholder="Password" />
+      <button onclick="signup()">Sign Up</button>
+      <button onclick="login()">Log In</button>
+      <p id="auth-message"></p>
+    </div>
+
+    <div id="navigation" class="hidden">
+      <nav>
+        <button onclick="showPage('dashboard')">Dashboard</button>
+        <button onclick="showPage('settings')">Account Settings</button>
+        <button onclick="logout()">Log Out</button>
+      </nav>
+    </div>
+
+    <div id="dashboard" class="hidden">
+      <h3>Finance Dashboard</h3>
+      <p>Balance: <span id="balance" class="positive">$0.00</span></p>
+      <input type="text" id="desc" placeholder="Description" />
+      <input type="number" id="amount" placeholder="Amount" />
+      <input type="date" id="duedate" />
+      <button onclick="addEntry()">Add Entry</button>
+      <div id="entries"></div>
+    </div>
+
+    <div id="settings" class="hidden">
+      <h3>Account Settings</h3>
+      <input type="password" id="newPassword" placeholder="New Password" />
+      <button onclick="changePassword()">Change Password</button>
+    </div>
+  </div>
+
+  <script>
+    let users = JSON.parse(localStorage.getItem('users') || '{}');
+    let currentUser = localStorage.getItem('currentUser');
+
+    function signup() {
+      const user = document.getElementById('username').value;
+      const pass = document.getElementById('password').value;
+      if (users[user]) return alert('User already exists');
+      users[user] = { password: pass, entries: [] };
+      localStorage.setItem('users', JSON.stringify(users));
+      alert('User registered');
+    }
+
+    function login() {
+      const user = document.getElementById('username').value;
+      const pass = document.getElementById('password').value;
+      if (users[user] && users[user].password === pass) {
+        currentUser = user;
+        localStorage.setItem('currentUser', user);
+        showApp();
+      } else {
+        document.getElementById('auth-message').innerText = 'Invalid login';
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('currentUser');
+      location.reload();
+    }
+
+    function showApp() {
+      document.getElementById('auth').classList.add('hidden');
+      document.getElementById('navigation').classList.remove('hidden');
+      document.getElementById('dashboard').classList.remove('hidden');
+      document.getElementById('accountDetails').innerText = `Logged in as: ${currentUser}`;
+      renderEntries();
+    }
+
+    function showPage(page) {
+      document.getElementById('dashboard').classList.add('hidden');
+      document.getElementById('settings').classList.add('hidden');
+      document.getElementById(page).classList.remove('hidden');
+    }
+
+    function addEntry() {
+      const desc = document.getElementById('desc').value;
+      const amount = parseFloat(document.getElementById('amount').value);
+      const duedate = document.getElementById('duedate').value || new Date().toLocaleDateString();
+      if (!desc || isNaN(amount)) return;
+      users[currentUser].entries.push({ desc, amount, duedate });
+      localStorage.setItem('users', JSON.stringify(users));
+      document.getElementById('desc').value = '';
+      document.getElementById('amount').value = '';
+      document.getElementById('duedate').value = '';
+      renderEntries();
+    }
+
+    function renderEntries() {
+      const container = document.getElementById('entries');
+      container.innerHTML = '';
+      let balance = 0;
+      users[currentUser].entries.forEach(entry => {
+        const div = document.createElement('div');
+        div.className = 'entry';
+        if (entry.amount < 0) div.classList.add('negative');
+        div.innerText = `${entry.duedate} - ${entry.desc}: $${entry.amount.toFixed(2)}`;
+        container.appendChild(div);
+        balance += entry.amount;
+      });
+      const balanceEl = document.getElementById('balance');
+      balanceEl.innerText = `$${balance.toFixed(2)}`;
+      balanceEl.className = balance < 0 ? 'negative' : 'positive';
+    }
+
+    function changePassword() {
+      const newPassword = document.getElementById('newPassword').value;
+      if (newPassword) {
+        users[currentUser].password = newPassword;
+        localStorage.setItem('users', JSON.stringify(users));
+        alert('Password changed successfully.');
+        document.getElementById('newPassword').value = '';
+      }
+    }
+
+    if (currentUser && users[currentUser]) showApp();
+  </script>
+</body>
+</html>
