@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from './SupabaseClient';
+import { supabase } from './supabaseClient';
 
 export default function App() {
   const [email, setEmail] = useState('');
@@ -8,20 +8,12 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
-  // Check active session on load
   useEffect(() => {
-    const session = supabase.auth.getSession().then(({ data }) => {
-      setUser(data.session?.user ?? null);
-    });
-
-    // Listen for auth changes (login/logout)
+    supabase.auth.getSession().then(({ data }) => setUser(data.session?.user ?? null));
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
     });
-
-    return () => {
-      listener.subscription.unsubscribe();
-    };
+    return () => listener.subscription.unsubscribe();
   }, []);
 
   async function handleSignup() {
@@ -50,38 +42,62 @@ export default function App() {
 
   if (user)
     return (
-      <div style={{ padding: 20 }}>
-        <h2>Welcome, {user.email}</h2>
-        <button onClick={handleLogout} disabled={loading}>
-          Logout
-        </button>
+      <div className="container">
+        <div className="welcome-box">
+          <h2>Welcome, {user.email}</h2>
+          <button className="btn btn-logout" onClick={handleLogout} disabled={loading}>
+            Logout
+          </button>
+        </div>
       </div>
     );
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Login / Signup</h2>
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        style={{ display: 'block', marginBottom: 10 }}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        style={{ display: 'block', marginBottom: 10 }}
-      />
-      <button onClick={handleLogin} disabled={loading} style={{ marginRight: 10 }}>
-        Log In
-      </button>
-      <button onClick={handleSignup} disabled={loading}>
-        Sign Up
-      </button>
-      {message && <p>{message}</p>}
+    <div className="container">
+      <form
+        className="auth-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleLogin();
+        }}
+      >
+        <h2 className="form-title">Login to MoneyMap</h2>
+
+        <input
+          type="email"
+          placeholder="Email"
+          className="input-field"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          autoFocus
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          className="input-field"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+
+        <div className="btn-group">
+          <button type="submit" className="btn btn-primary" disabled={loading}>
+            Log In
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={handleSignup}
+            disabled={loading}
+          >
+            Sign Up
+          </button>
+        </div>
+
+        {message && <p className="message">{message}</p>}
+      </form>
     </div>
   );
 }

@@ -1,0 +1,123 @@
+/* Reset and base */
+* {
+  box-sizing: border-box;
+}
+body, html, #root {
+  height: 100%;
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #4caf50, #087f23);
+  color: #333;
+}
+
+/* Container to center form vertically and horizontally */
+.container {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+/* Form styling */
+.auth-form {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  width: 320px;
+  text-align: center;
+}
+
+/* Form title */
+.form-title {
+  margin-bottom: 25px;
+  color: #087f23;
+  font-weight: 700;
+  font-size: 1.8rem;
+}
+
+/* Input fields */
+.input-field {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.input-field:focus {
+  border-color: #4caf50;
+  outline: none;
+}
+
+/* Buttons container */
+.btn-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Buttons */
+.btn {
+  flex: 1;
+  padding: 12px 0;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  color: white;
+  font-weight: 600;
+  user-select: none;
+}
+
+.btn-primary {
+  background-color: #4caf50;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #43a047;
+}
+
+.btn-secondary {
+  background-color: #8bc34a;
+  color: #2e2e2e;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #7cb342;
+}
+
+.btn:disabled {
+  background-color: #a5d6a7;
+  cursor: not-allowed;
+}
+
+/* Message below buttons */
+.message {
+  margin-top: 20px;
+  font-weight: 600;
+  color: #d32f2f; /* red for errors, else you can toggle colors */
+}
+
+/* Logged in view */
+.welcome-box {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  width: 320px;
+  text-align: center;
+}
+
+.btn-logout {
+  margin-top: 25px;
+  background-color: #e53935;
+}
+
+.btn-logout:hover:not(:disabled) {
+  background-color: #d32f2f;
+}
